@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--
+    Título y descripción a propósito neutros: son lo que WhatsApp muestra
+    en la vista previa del enlace, así que no deben revelar el contenido.
+  -->
+  <meta name="description" content="Ábrelo cuando puedas.">
+  <meta name="theme-color" content="#101a2e">
+  <title>Para ti 💙</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-1: #1c2c4d;
+      --bg-2: #0d1426;
+      --ink: #eaf1ff;
+      --muted: #9fb2d6;
+      --blue: #8fc1ff;
+      --blue-deep: #4f86d6;
+      --rose: #ffb3c7;
+      --paper: #f6f1e7;
+      --paper-ink: #3a3350;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: radial-gradient(ellipse at 50% 20%, var(--bg-1) 0%, var(--bg-2) 75%);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:focus-visible {
+      outline: 3px solid var(--blue);
+      outline-offset: 3px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* Estrellitas de fondo, solo decoración. */
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.55) 0 1.5px, transparent 2.5px),
+        radial-gradient(circle at 82% 12%, rgba(255, 255, 255, 0.45) 0 1.5px, transparent 2.5px),
+        radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.35) 0 1px, transparent 2px),
+        radial-gradient(circle at 25% 80%, rgba(255, 255, 255, 0.4) 0 1.5px, transparent 2.5px),
+        radial-gradient(circle at 90% 45%, rgba(255, 255, 255, 0.3) 0 1px, transparent 2px);
+      animation: twinkle 5s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      from { opacity: 0.55; }
+      to { opacity: 1; }
+    }
+
+    .card {
+      position: relative;
+      width: min(100%, 440px);
+      height: min(640px, calc(100dvh - 32px));
+      min-height: 520px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+    }
+
+    /* Puntos de progreso */
+    .dots {
+      position: absolute;
+      top: 16px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      z-index: 5;
+    }
+
+    .dots i {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.22);
+      transition: background 0.4s, transform 0.4s;
+    }
+
+    .dots i.on {
+      background: var(--blue);
+      transform: scale(1.3);
+    }
+
+    .music-btn {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      z-index: 6;
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .music-btn[hidden] { display: none; }
+    .music-btn.muted { opacity: 0.55; }
+
+    /* Escenas */
+    .scene {
+      position: absolute;
+      inset: 0;
+      padding: 52px 26px 28px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      text-align: center;
+    }
+
+    .scene.active {
+      display: flex;
+      animation: scene-in 0.7s ease both;
+    }
+
+    @keyframes scene-in {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    h1, h2 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 400;
+      line-height: 1.2;
+    }
+
+    h1 { font-size: clamp(1.9rem, 8vw, 2.5rem); }
+    h2 { font-size: clamp(1.4rem, 6vw, 1.8rem); }
+
+    .hint {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .btn {
+      padding: 12px 26px;
+      border: 0;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-deep) 100%);
+      color: #0b1530;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(79, 134, 214, 0.35);
+      transition: transform 0.15s;
+    }
+
+    .btn:active { transform: scale(0.96); }
+
+    .btn.ghost {
+      background: transparent;
+      color: var(--muted);
+      box-shadow: none;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn[hidden] { display: none; }
+
+    /* ---------- 1. Sobre ---------- */
+    .envelope {
+      position: relative;
+      width: 240px;
+      height: 160px;
+      padding: 0;
+      border: 0;
+      background: none;
+      border-radius: 10px;
+      cursor: pointer;
+      perspective: 700px;
+      animation: float 3.2s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .envelope .body {
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+      background: linear-gradient(160deg, #cfe4ff, #8fb6ee);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+    }
+
+    /*
+      Orden de capas del sobre (de atrás hacia adelante):
+      cuerpo 0, solapa abierta 1, carta 2, bolsillo frontal 3, solapa cerrada 4, sello 5.
+      La solapa cambia de capa a mitad de la apertura para que la carta
+      suba por delante de ella y no quede tapada.
+    */
+    .envelope .body { z-index: 0; }
+
+    .envelope .letter {
+      position: absolute;
+      z-index: 2;
+      left: 14px;
+      right: 14px;
+      bottom: 12px;
+      height: 120px;
+      border-radius: 6px;
+      background:
+        repeating-linear-gradient(transparent 0 15px, rgba(111, 150, 220, 0.3) 15px 16px),
+        var(--paper);
+      background-position: 0 14px, 0 0;
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.12);
+      transition: transform 0.9s cubic-bezier(.3, .9, .3, 1) 0.4s;
+    }
+
+    .envelope .letter::after {
+      content: "💌";
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      font-size: 22px;
+      transform: translateX(-50%);
+    }
+
+    .envelope .front {
+      position: absolute;
+      z-index: 3;
+      inset: 0;
+      border-radius: 10px;
+      background:
+        linear-gradient(to top right, #a9c8f3 49.5%, transparent 50%) left / 51% 100% no-repeat,
+        linear-gradient(to top left, #b7d2f7 49.5%, transparent 50%) right / 51% 100% no-repeat;
+    }
+
+    .envelope .flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 82px;
+      background: linear-gradient(180deg, #dcebff, #b1cdf5);
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      transform-origin: top;
+      z-index: 4;
+      transition: transform 0.6s ease, z-index 0s 0.3s;
+    }
+
+    .envelope .seal {
+      position: absolute;
+      top: 62px;
+      left: 50%;
+      width: 34px;
+      height: 34px;
+      margin-left: -17px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #e8667f;
+      font-size: 17px;
+      z-index: 5;
+      transition: opacity 0.3s;
+    }
+
+    /* Pausar (no quitar) la flotación: quitarla hacía saltar el sobre a su sitio. */
+    .envelope.open { animation-play-state: paused; }
+    .envelope.open .flap { z-index: 1; transform: rotateX(180deg); }
+    .envelope.open .seal { opacity: 0; }
+    .envelope.open .letter { transform: translateY(-84px); }
+
+    /* Mientras se abre, el texto de la escena se desvanece y al final sale toda suavemente. */
+    .scene.opened h1,
+    .scene.opened .hint {
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .scene.leaving {
+      animation: scene-out 0.55s ease both;
+    }
+
+    @keyframes scene-out {
+      to { opacity: 0; transform: translateY(-14px) scale(1.04); }
+    }
+
+    /* ---------- 2. Corazón ---------- */
+    .holder {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+
+    .holder svg {
+      position: absolute;
+      inset: 0;
+      transform: rotate(-90deg);
+    }
+
+    .holder circle {
+      fill: none;
+      stroke-width: 6;
+    }
+
+    .holder .track { stroke: rgba(255, 255, 255, 0.12); }
+
+    .holder .bar {
+      stroke: var(--rose);
+      stroke-linecap: round;
+      stroke-dasharray: 534;
+      stroke-dashoffset: 534;
+    }
+
+    .holder .heart {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 72px;
+      transition: transform 0.2s;
+    }
+
+    .holder.pressing .heart { transform: scale(1.12); }
+
+    /* ---------- 3. Momentos ---------- */
+    .scene.compact { gap: 10px; }
+
+    .flips {
+      width: 100%;
+      display: grid;
+      gap: 12px;
+    }
+
+    /*
+      Cada tarjeta lleva sus dos colores en --c1 y --c2 (se ponen desde JS).
+      El ángulo --tilt las deja ligeramente chuecas, como stickers pegados.
+    */
+    .flip {
+      position: relative;
+      width: 100%;
+      height: 98px;
+      padding: 0;
+      border: 0;
+      background: none;
+      cursor: pointer;
+      perspective: 900px;
+      transform: rotate(var(--tilt, 0deg));
+      transition: transform 0.3s;
+      animation: card-pop 0.6s cubic-bezier(.2, 1.4, .4, 1) backwards;
+      animation-delay: var(--delay, 0s);
+    }
+
+    .flip:not(.flipped):hover,
+    .flip:not(.flipped):active { transform: rotate(0deg) scale(1.03); }
+
+    @keyframes card-pop {
+      from { opacity: 0; transform: translateY(24px) rotate(calc(var(--tilt, 0deg) * 3)) scale(0.85); }
+      to { opacity: 1; }
+    }
+
+    .flip .face {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border-radius: 20px;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      transition: transform 0.7s cubic-bezier(.3, 1.3, .5, 1);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    /* Frente: degradado de color, burbuja con ícono y confeti dibujado con CSS */
+    .flip .front {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 18px;
+      text-align: left;
+      background:
+        radial-gradient(circle at 88% 22%, rgba(255, 255, 255, 0.55) 0 2px, transparent 3px),
+        radial-gradient(circle at 74% 78%, rgba(255, 255, 255, 0.45) 0 3px, transparent 4px),
+        radial-gradient(circle at 94% 64%, rgba(255, 255, 255, 0.4) 0 2px, transparent 3px),
+        radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.28) 0 38px, transparent 39px),
+        linear-gradient(135deg, var(--c1), var(--c2));
+      color: #fff;
+    }
+
+    .flip .icon {
+      flex: none;
+      width: 62px;
+      height: 62px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), inset 0 -4px 0 rgba(0, 0, 0, 0.06);
+      font-size: 32px;
+      animation: wiggle 3.4s ease-in-out infinite;
+      animation-delay: var(--delay, 0s);
+    }
+
+    @keyframes wiggle {
+      0%, 85%, 100% { transform: rotate(0); }
+      90% { transform: rotate(-12deg) scale(1.08); }
+      95% { transform: rotate(10deg) scale(1.08); }
+    }
+
+    .flip .label {
+      display: grid;
+      gap: 3px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.2rem;
+      line-height: 1.15;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    }
+
+    .flip .label small {
+      font-family: system-ui, sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+
+    /* Dorso: papel crema con cinta de washi del color de la tarjeta */
+    .flip .back {
+      display: flex;
+      align-items: center;
+      padding: 14px 18px 14px 20px;
+      background:
+        linear-gradient(90deg, var(--c1), var(--c2)) left / 8px 100% no-repeat,
+        var(--paper);
+      color: var(--paper-ink);
+      font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+      font-size: 0.88rem;
+      line-height: 1.4;
+      text-align: left;
+      transform: rotateY(180deg);
+    }
+
+    .flip .back::after {
+      content: attr(data-icon);
+      position: absolute;
+      right: -6px;
+      bottom: -14px;
+      font-size: 56px;
+      opacity: 0.16;
+      transform: rotate(-14deg);
+    }
+
+    .flip.flipped { transform: rotate(calc(var(--tilt, 0deg) * -0.6)); }
+    .flip.flipped .front { transform: rotateY(-180deg); }
+    .flip.flipped .back { transform: rotateY(0); }
+
+    /* ---------- 4. Carta ---------- */
+    .scene.letter-scene { gap: 16px; }
+
+    /* Hoja de cuaderno rosada, chueca, con cinta, margen y stickers. */
+    .paper {
+      position: relative;
+      width: 100%;
+      padding: 30px 20px 26px 44px;
+      border-radius: 10px 10px 16px 16px;
+      background:
+        linear-gradient(90deg, transparent 34px, rgba(240, 110, 145, 0.55) 34px 35.5px, transparent 35.5px),
+        radial-gradient(circle at 92% 8%, rgba(143, 193, 255, 0.35), transparent 38%),
+        linear-gradient(165deg, #fff9f4 0%, #fdeaf1 58%, #ecf1ff 100%);
+      color: #4a3a5c;
+      text-align: left;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4);
+      transform: rotate(-1.2deg);
+      animation: paper-in 0.8s cubic-bezier(.2, 1.3, .4, 1) backwards;
+      cursor: pointer;
+    }
+
+    @keyframes paper-in {
+      from { opacity: 0; transform: translateY(30px) rotate(-6deg) scale(0.9); }
+    }
+
+    /* Cinta washi azul con rayas */
+    .paper .tape {
+      position: absolute;
+      top: -13px;
+      left: 50%;
+      width: 112px;
+      height: 26px;
+      background: repeating-linear-gradient(45deg, rgba(143, 193, 255, 0.92) 0 8px, rgba(255, 255, 255, 0.85) 8px 16px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      transform: translateX(-50%) rotate(-3deg);
+    }
+
+    .paper .sticker {
+      position: absolute;
+      pointer-events: none;
+      line-height: 1;
+    }
+
+    .paper .s-butterfly {
+      top: -4px;
+      right: 14px;
+      font-size: 28px;
+      animation: flutter 3.6s ease-in-out infinite;
+    }
+
+    .paper .s-flower {
+      right: 8px;
+      bottom: -16px;
+      font-size: 38px;
+      transform: rotate(14deg);
+    }
+
+    .paper .s-heart {
+      left: 6px;
+      bottom: -10px;
+      font-size: 24px;
+      transform: rotate(-12deg);
+    }
+
+    @keyframes flutter {
+      0%, 100% { transform: translate(0, 0) rotate(8deg); }
+      50% { transform: translate(-6px, -7px) rotate(-8deg); }
+    }
+
+    .paper-title {
+      margin: 0 0 6px;
+      font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+      font-size: 1.2rem;
+      line-height: 1.3;
+      color: #d4547d;
+    }
+
+    /* Renglones: la altura de línea del texto es 26px, igual que el patrón. */
+    .paper-body {
+      position: relative;
+      background: repeating-linear-gradient(to bottom, transparent 0 25px, rgba(111, 160, 230, 0.35) 25px 26px);
+    }
+
+    .paper-body p {
+      margin: 0;
+      font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+      font-size: 0.84rem;
+      line-height: 26px;
+      white-space: pre-wrap;
+    }
+
+    /* El texto completo va invisible para reservar el alto desde el inicio y que no salte al escribirse. */
+    .paper-body .ghost { visibility: hidden; }
+
+    .paper-body .live {
+      position: absolute;
+      inset: 0;
+    }
+
+    #toEnd[hidden] {
+      display: inline-block;
+      visibility: hidden;
+    }
+
+    .caret::after {
+      content: "|";
+      margin-left: 1px;
+      color: #d4547d;
+      animation: blink 0.9s steps(1) infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    /* ---------- 5. Final ---------- */
+    .big-heart {
+      font-size: 84px;
+      line-height: 1;
+      animation: beat 2.4s ease-in-out infinite;
+    }
+
+    @keyframes beat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .hug-gif {
+      width: min(72%, 250px);
+      height: auto;
+      border-radius: 20px;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+      animation: scene-in 0.5s ease both;
+    }
+
+    .hug-gif[hidden] { display: none; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    /* ---------- Corazones que suben ---------- */
+    .floaters {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    .floater {
+      position: absolute;
+      bottom: -40px;
+      animation: rise var(--t, 3s) ease-out forwards;
+    }
+
+    @keyframes rise {
+      0% { opacity: 0; transform: translate(0, 0) scale(0.6); }
+      10% { opacity: 1; }
+      100% { opacity: 0; transform: translate(var(--dx, 0), -105vh) scale(1.1) rotate(var(--r, 0deg)); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+  <div class="floaters" id="floaters" aria-hidden="true"></div>
+
+  <main class="card">
+    <div class="dots" id="dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+
+    <!-- Música: solo aparece si el archivo existe en musica/ -->
+    <audio id="music" src="musica/romantica.mp3" loop preload="auto"></audio>
+    <button class="music-btn" id="musicBtn" type="button" aria-pressed="true" aria-label="Silenciar música" hidden>🎵</button>
+
+    <!-- 1. Sobre -->
+    <section class="scene" data-scene="0" aria-label="Sobre cerrado">
+      <h1 data-t="titulo"></h1>
+      <button class="envelope" id="envelope" type="button" aria-label="Abrir el sobre">
+        <span class="body"></span>
+        <span class="letter"></span>
+        <span class="front"></span>
+        <span class="flap"></span>
+        <span class="seal" aria-hidden="true">💙</span>
+      </button>
+      <p class="hint">Toca el sobre para abrirlo</p>
+    </section>
+
+    <!-- 2. Corazón -->
+    <section class="scene" data-scene="1" aria-label="Mantén el corazón">
+      <h2>Antes de empezar…</h2>
+      <button class="holder" id="holder" type="button" aria-label="Mantén presionado el corazón">
+        <svg viewBox="0 0 180 180" aria-hidden="true">
+          <circle class="track" cx="90" cy="90" r="85"/>
+          <circle class="bar" id="bar" cx="90" cy="90" r="85"/>
+        </svg>
+        <span class="heart" aria-hidden="true">💙</span>
+      </button>
+      <p class="hint" id="holdHint">Mantén presionado el corazón</p>
+    </section>
+
+    <!-- 3. Momentos -->
+    <section class="scene compact" data-scene="2" aria-label="Momentos del fin de semana">
+      <h2>Me encantó…</h2>
+      <p class="hint">Toca cada tarjeta</p>
+      <div class="flips" id="flips"></div>
+      <button class="btn" id="toLetter" type="button" hidden>Seguir</button>
+    </section>
+
+    <!-- 4. Carta -->
+    <section class="scene letter-scene" data-scene="3" aria-label="Carta">
+      <div class="paper" id="paper" role="button" tabindex="0" aria-label="Carta. Toca para mostrarla completa.">
+        <span class="tape" aria-hidden="true"></span>
+        <span class="sticker s-butterfly" aria-hidden="true">🦋</span>
+        <span class="sticker s-flower" aria-hidden="true">🌸</span>
+        <span class="sticker s-heart" aria-hidden="true">💗</span>
+        <p class="paper-title" aria-hidden="true">Para ti, <span id="paperName"></span> 💌</p>
+        <div class="paper-body" aria-hidden="true">
+          <p class="ghost" id="letterGhost"></p>
+          <p class="live caret" id="letterText"></p>
+        </div>
+      </div>
+      <button class="btn" id="toEnd" type="button" hidden>Seguir</button>
+    </section>
+
+    <!-- 5. Final -->
+    <section class="scene" data-scene="4" aria-label="Final">
+      <div class="big-heart" id="bigHeart" aria-hidden="true">💙</div>
+      <img class="hug-gif" id="hugGif" alt="Dos gatitos abrazándose" hidden>
+      <h1 id="thanks"></h1>
+      <p class="hint" id="endText"></p>
+      <div class="actions">
+        <button class="btn" id="hug" type="button">Enviar un abrazo</button>
+        <button class="btn ghost" id="replay" type="button">Verlo otra vez</button>
+      </div>
+      <p class="hint" id="hugMsg" role="status"></p>
+    </section>
+  </main>
+
+  <script>
+    /*
+      Todo el texto editable está aquí arriba.
+      Duración máxima: cada escena avanza sola tras un tiempo de espera, así que
+      aunque nadie toque nada la tarjeta llega al final en ~80 s (muy por debajo
+      de los 2 min). La última escena se queda quieta.
+    */
+    const CONFIG = {
+      para: "Mor",             // cómo lo llamas
+      titulo: "Tengo algo para ti",
+      gracias: "Gracias, Mor",
+      cierre: "Por un fin de semana tan bonito e íntimo.",
+      momentos: [
+        { icono: "🫶", frente: "Tenerte cerca", pista: "Toca para ver", dorso: "Lo mejor fue sentirte cerca, sin prisa y sin distancia.", c1: "#ff8fab", c2: "#ffb88c", confeti: ["🌷", "💗", "✨"] },
+        { icono: "☕", frente: "Lo sencillo", pista: "Toca para ver", dorso: "Hasta lo más simple contigo se sintió especial.", c1: "#4fb0e8", c2: "#6fe0c8", confeti: ["☁️", "⭐", "💙"] },
+        { icono: "💌", frente: "Tu cariño", pista: "Toca para ver", dorso: "Cada detalle tuyo, aunque no lo notaras, lo guardé.", c1: "#a58bf0", c2: "#f08bc8", confeti: ["🦋", "💜", "✨"] }
+      ],
+      carta:
+        "{para}, quería escribirte esto con calma.\n\n" +
+        "Este fin de semana fue más bonito de lo que esperaba, y gran parte fue por ti. " +
+        "Me hiciste sentir cerca, tranquila y feliz de estar justo donde estaba.\n\n" +
+        "Gracias por tu tiempo, por tu cariño y por cada detalle. " +
+        "Ojalá se repita muy pronto."
+    };
+
+    // Tiempos (ms). Suma del peor caso: 10 + 14 + 24 + 28 = 76 s.
+    const IDLE = { 0: 10000, 1: 14000, 2: 24000, 3: 28000 };
+    const HOLD_MS = 2200;
+    const TYPE_MS = 38;
+
+    const $ = (id) => document.getElementById(id);
+    const scenes = [...document.querySelectorAll('.scene')];
+    const dots = [...document.querySelectorAll('#dots i')];
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let current = -1;
+    let idleTimer = null;
+    let typeTimer = null;
+    let holdRaf = null;
+
+    function go(n) {
+      clearTimeout(idleTimer);
+      clearTimeout(typeTimer);
+      cancelAnimationFrame(holdRaf);
+      current = n;
+      scenes.forEach((s, i) => s.classList.toggle('active', i === n));
+      dots.forEach((d, i) => d.classList.toggle('on', i === n));
+      ENTER[n]();
+      if (IDLE[n]) idleTimer = setTimeout(() => go(n + 1), IDLE[n]);
+    }
+
+    /* ---------- Corazones ---------- */
+    function burst(count = 18, emojis = ['💙', '💗', '✨', '💞']) {
+      const box = $('floaters');
+      const n = reduceMotion ? Math.min(count, 6) : count;
+      for (let i = 0; i < n; i++) {
+        const el = document.createElement('span');
+        el.className = 'floater';
+        el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        el.style.left = (5 + Math.random() * 90) + 'vw';
+        el.style.fontSize = (16 + Math.random() * 22) + 'px';
+        el.style.setProperty('--t', (2.4 + Math.random() * 2) + 's');
+        el.style.setProperty('--dx', (Math.random() * 120 - 60) + 'px');
+        el.style.setProperty('--r', (Math.random() * 50 - 25) + 'deg');
+        el.style.animationDelay = (Math.random() * 0.5) + 's';
+        el.addEventListener('animationend', () => el.remove());
+        box.appendChild(el);
+      }
+    }
+
+    /* ---------- Música ---------- */
+    /*
+      Archivo esperado: musica/romantica.mp3. Los navegadores no dejan sonar
+      nada sin que la persona toque algo, por eso arranca con el clic en el sobre.
+      Si el archivo no existe, el botón nunca aparece y la tarjeta funciona igual.
+    */
+    const MUSIC_VOL = 0.45;
+    const music = $('music');
+    const musicBtn = $('musicBtn');
+    let musicOn = true;
+    let fadeTimer = null;
+
+    function fadeTo(target, ms = 1800) {
+      clearInterval(fadeTimer);
+      const from = music.volume;
+      const t0 = performance.now();
+      fadeTimer = setInterval(() => {
+        const k = Math.min(1, (performance.now() - t0) / ms);
+        music.volume = from + (target - from) * k;
+        if (k >= 1) {
+          clearInterval(fadeTimer);
+          if (target === 0) music.pause();
+        }
+      }, 50);
+    }
+
+    let musicStarted = false;
+
+    function startMusic() {
+      if (!musicOn || music.error) return;
+      musicStarted = true;
+      music.volume = 0;
+      music.play().then(() => fadeTo(MUSIC_VOL)).catch(() => {});
+    }
+
+    music.addEventListener('canplay', () => { musicBtn.hidden = false; }, { once: true });
+
+    musicBtn.addEventListener('click', () => {
+      musicOn = !musicOn;
+      musicBtn.setAttribute('aria-pressed', String(musicOn));
+      musicBtn.setAttribute('aria-label', musicOn ? 'Silenciar música' : 'Activar música');
+      musicBtn.classList.toggle('muted', !musicOn);
+      musicBtn.textContent = musicOn ? '🎵' : '🔇';
+      if (musicOn) {
+        music.play().then(() => fadeTo(MUSIC_VOL, 800)).catch(() => {});
+      } else {
+        fadeTo(0, 500);
+      }
+    });
+
+    // Si cambian de pestaña o bloquean el celular, la música se pausa.
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) music.pause();
+      else if (musicOn && musicStarted) startMusic();
+    });
+
+    /* ---------- 1. Sobre ---------- */
+    let opening = false;
+    function openEnvelope() {
+      if (opening) return;
+      opening = true;
+      startMusic();
+      clearTimeout(idleTimer);
+      const scene = scenes[0];
+      $('envelope').classList.add('open');
+      scene.classList.add('opened');
+      // La carta termina de subir hacia ~1.3 s; después la escena se desvanece antes de cambiar.
+      setTimeout(() => scene.classList.add('leaving'), 1600);
+      setTimeout(() => { opening = false; go(1); }, 2150);
+    }
+
+    /* ---------- 2. Corazón ---------- */
+    const BAR_LEN = 534;
+    let holding = false;
+    let progress = 0;
+
+    function holdLoop(last) {
+      holdRaf = requestAnimationFrame((now) => {
+        const dt = now - last;
+        progress = holding
+          ? Math.min(1, progress + dt / HOLD_MS)
+          : Math.max(0, progress - dt / 700);
+        $('bar').style.strokeDashoffset = BAR_LEN * (1 - progress);
+        if (progress >= 1) {
+          holding = false;
+          burst(26);
+          setTimeout(() => go(2), 900);
+          return;
+        }
+        holdLoop(now);
+      });
+    }
+
+    function pressStart(e) {
+      e.preventDefault();
+      holding = true;
+      $('holder').classList.add('pressing');
+      $('holdHint').textContent = 'Sigue así…';
+    }
+
+    function pressEnd() {
+      if (!holding) return;
+      holding = false;
+      $('holder').classList.remove('pressing');
+      $('holdHint').textContent = 'Mantén presionado el corazón';
+    }
+
+    /* ---------- 3. Momentos ---------- */
+    function buildFlips() {
+      const box = $('flips');
+      box.innerHTML = '';
+      const tilts = ['-1.6deg', '1.2deg', '-1deg'];
+      CONFIG.momentos.forEach((m, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'flip';
+        b.setAttribute('aria-pressed', 'false');
+        b.style.setProperty('--c1', m.c1);
+        b.style.setProperty('--c2', m.c2);
+        b.style.setProperty('--tilt', tilts[i % tilts.length]);
+        b.style.setProperty('--delay', (0.15 * i) + 's');
+
+        const front = document.createElement('span');
+        front.className = 'face front';
+        const icon = document.createElement('span');
+        icon.className = 'icon';
+        icon.setAttribute('aria-hidden', 'true');
+        icon.textContent = m.icono;
+        const label = document.createElement('span');
+        label.className = 'label';
+        label.textContent = m.frente;
+        const hint = document.createElement('small');
+        hint.textContent = m.pista;
+        label.appendChild(hint);
+        front.append(icon, label);
+
+        const back = document.createElement('span');
+        back.className = 'face back';
+        back.dataset.icon = m.icono;
+        back.textContent = m.dorso;
+
+        b.append(front, back);
+        b.addEventListener('click', () => {
+          b.classList.add('flipped');
+          b.setAttribute('aria-pressed', 'true');
+          burst(7, m.confeti);
+          if (box.querySelectorAll('.flipped').length === CONFIG.momentos.length) {
+            $('toLetter').hidden = false;
+          }
+        });
+        box.appendChild(b);
+      });
+      $('toLetter').hidden = true;
+    }
+
+    /* ---------- 4. Carta ---------- */
+    let fullLetter = '';
+    let typed = 0;
+    let typingDone = false;
+
+    function finishLetter() {
+      clearTimeout(typeTimer);
+      typed = fullLetter.length;
+      typingDone = true;
+      $('letterText').textContent = fullLetter;
+      $('letterText').classList.remove('caret');
+      $('paper').setAttribute('aria-label', fullLetter);
+      $('toEnd').hidden = false;
+      // Tras terminar de leer, avanza sola en unos segundos.
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => go(4), 9000);
+    }
+
+    function typeStep() {
+      if (typed >= fullLetter.length) return finishLetter();
+      typed++;
+      $('letterText').textContent = fullLetter.slice(0, typed);
+      const ch = fullLetter[typed - 1];
+      if (ch === '\n' && fullLetter[typed - 2] === '\n') burst(3, ['💗', '🌸', '✨']);
+      const pause = ch === '\n' ? 350 : '.,'.includes(ch) ? 130 : TYPE_MS;
+      typeTimer = setTimeout(typeStep, pause);
+    }
+
+    /* ---------- 5. Final ---------- */
+    const HUG_GIF = 'imagenes/abrazo.gif';
+    const hugs = ['Abrazo enviado 🤍', 'Y otro más 💙', 'Gracias por todo 💗'];
+    let hugCount = 0;
+
+    /* ---------- Entrada a cada escena ---------- */
+    const ENTER = [
+      () => {
+        opening = false;
+        scenes[0].classList.remove('opened', 'leaving');
+        $('envelope').classList.remove('open');
+      },
+      () => {
+        progress = 0;
+        holding = false;
+        $('bar').style.strokeDashoffset = BAR_LEN;
+        $('holder').classList.remove('pressing');
+        $('holdHint').textContent = 'Mantén presionado el corazón';
+        holdLoop(performance.now());
+      },
+      () => buildFlips(),
+      () => {
+        typed = 0;
+        typingDone = false;
+        $('letterText').textContent = '';
+        $('letterText').classList.add('caret');
+        $('toEnd').hidden = true;
+        typeTimer = setTimeout(typeStep, 600);
+      },
+      () => {
+        hugCount = 0;
+        $('hugMsg').textContent = '';
+        $('hugGif').hidden = true;
+        $('hugGif').removeAttribute('src');
+        $('bigHeart').hidden = false;
+        new Image().src = HUG_GIF; // precarga para que aparezca al instante al dar clic
+        burst(22);
+      }
+    ];
+
+    /* ---------- Eventos ---------- */
+    $('envelope').addEventListener('click', openEnvelope);
+
+    const holder = $('holder');
+    holder.addEventListener('pointerdown', pressStart);
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach((t) => holder.addEventListener(t, pressEnd));
+    holder.addEventListener('keydown', (e) => {
+      if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) pressStart(e);
+    });
+    holder.addEventListener('keyup', (e) => {
+      if (e.key === ' ' || e.key === 'Enter') pressEnd();
+    });
+
+    $('toLetter').addEventListener('click', () => go(3));
+
+    $('paper').addEventListener('click', () => { if (!typingDone) finishLetter(); });
+    $('paper').addEventListener('keydown', (e) => {
+      if ((e.key === ' ' || e.key === 'Enter') && !typingDone) {
+        e.preventDefault();
+        finishLetter();
+      }
+    });
+    $('toEnd').addEventListener('click', () => go(4));
+
+    // Si el GIF no está en la carpeta, se queda el corazón y no se ve un icono roto.
+    $('hugGif').addEventListener('error', () => {
+      $('hugGif').hidden = true;
+      $('bigHeart').hidden = false;
+    });
+
+    $('hug').addEventListener('click', () => {
+      const gif = $('hugGif');
+      if (gif.hidden) {
+        // Se asigna el src al primer clic para que la animación arranque desde el inicio.
+        gif.src = HUG_GIF;
+        gif.hidden = false;
+        $('bigHeart').hidden = true;
+      }
+      $('hugMsg').textContent = hugs[hugCount % hugs.length];
+      hugCount++;
+      burst(14);
+    });
+    $('replay').addEventListener('click', () => go(0));
+
+    /* ---------- Arranque ---------- */
+    fullLetter = CONFIG.carta.replace('{para}', CONFIG.para);
+    document.querySelector('[data-t="titulo"]').textContent = CONFIG.titulo;
+    $('thanks').textContent = CONFIG.gracias;
+    $('endText').textContent = CONFIG.cierre;
+    $('letterGhost').textContent = fullLetter;
+    $('paperName').textContent = CONFIG.para;
+    go(0);
+  </script>
+</body>
+</html>
