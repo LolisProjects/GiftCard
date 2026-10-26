@@ -372,6 +372,19 @@
     /* ---------- 3. Momentos ---------- */
     .scene.compact { gap: 10px; }
 
+    /* Entrada en secuencia: primero la frase, luego el título, luego las tarjetas. */
+    .lead-in {
+      margin: 0;
+      color: var(--rose);
+      font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+      font-size: 1.05rem;
+      line-height: 1.4;
+    }
+
+    .reveal {
+      animation: scene-in 0.8s ease var(--rd, 0s) backwards;
+    }
+
     .flips {
       width: 100%;
       display: grid;
@@ -712,8 +725,9 @@
 
     <!-- 3. Momentos -->
     <section class="scene compact" data-scene="2" aria-label="Momentos del fin de semana">
-      <h2>Me encantó…</h2>
-      <p class="hint">Toca cada tarjeta</p>
+      <p class="lead-in">Sabes, tengo algo que decirte…</p>
+      <h2 class="reveal" style="--rd: 1s">Me encantó…</h2>
+      <p class="hint reveal" style="--rd: 1.4s">Toca cada tarjeta</p>
       <div class="flips" id="flips"></div>
       <button class="btn" id="toLetter" type="button" hidden>Seguir</button>
     </section>
@@ -758,7 +772,7 @@
     const CONFIG = {
       para: "Mor",             // cómo lo llamas
       titulo: "Tengo algo para ti",
-      gracias: "Gracias, Mor",
+      gracias: "Gracias, Mor 😘",
       cierre: "Por un fin de semana tan bonito e íntimo.",
       momentos: [
         { icono: "🫶", frente: "Tenerte cerca", pista: "Toca para ver", dorso: "Lo mejor fue sentirte cerca, sin prisa y sin distancia.", c1: "#ff8fab", c2: "#ffb88c", confeti: ["🌷", "💗", "✨"] },
@@ -769,8 +783,8 @@
         "{para}, quería escribirte esto con calma.\n\n" +
         "Este fin de semana fue más bonito de lo que esperaba, y gran parte fue por ti. " +
         "Me hiciste sentir cerca, tranquila y feliz de estar justo donde estaba.\n\n" +
-        "Gracias por tu tiempo, por tu cariño y por cada detalle. " +
-        "Ojalá se repita muy pronto."
+        "Gracias por tu tiempo, por tu cariño y por cada detalle.\n\n" +
+        "Te voy a extrañar…"
     };
 
     // Tiempos (ms). Suma del peor caso: 10 + 14 + 24 + 28 = 76 s.
@@ -938,7 +952,7 @@
         b.style.setProperty('--c1', m.c1);
         b.style.setProperty('--c2', m.c2);
         b.style.setProperty('--tilt', tilts[i % tilts.length]);
-        b.style.setProperty('--delay', (0.15 * i) + 's');
+        b.style.setProperty('--delay', (1.7 + 0.15 * i) + 's');
 
         const front = document.createElement('span');
         front.className = 'face front';
